@@ -6,21 +6,21 @@ namespace CY_API.Controllers.Interfaces
     public interface ICrudController<T,TParams>
     {
         [HttpGet]
-        public IEnumerable<T> Get([FromQuery] TParams objParams);
+        public Task<IEnumerable<T>> Get([FromQuery] TParams objParams);
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public string Get(int id);
+        public Task<T> Get(string id);
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] T obj);
+        public Task<T> Post([FromBody] T obj);
 
         [HttpPost("{id}")]
-        public void Post(int id, [FromBody] T obj);
+        public Task Post(string id, [FromBody] T obj);
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id);
+        public Task Delete(string id);
     }
 }

@@ -1,34 +1,82 @@
 using CY_API.Controllers.Interfaces;
 using CY_API.Models;
+using CY_API.Models.Parameters;
+using CY_API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CY_API.Controllers;
 
-[Route("api/[controller]")]
-public class UsersController : ControllerBase, ICrudController<User,UserParameters>
+public class UsersController : ControllerBase, ICrudController<User, UserParameters>
 {
+    private readonly IUserRepository _repository;
 
-    public IEnumerable<User> Get([FromQuery] UserParameters userParams)
+    public UsersController(IUserRepository userRepository)
     {
-        throw new NotImplementedException();
+        _repository = userRepository;
     }
 
-    public string Get(int id)
+    [HttpGet("/users")]
+    public async Task<IEnumerable<User>> Get([FromQuery] UserParameters userParams)
     {
-        throw new NotImplementedException();
+        return await _repository.GetUsersAsync();
+    }
+    [Route("user")]
+    [HttpGet("/users/{id}")]
+    public async Task<User> Get(string id)
+    {
+        return await _repository.GetUserAsync(id);
     }
 
-    public void Post([FromBody] User user)
+    [HttpPost("/users")]
+    public async Task<User> Post([FromBody] User user)
     {
-        throw new NotImplementedException();
+        user.Id = Guid.NewGuid().ToString();
+        await _repository.SaveUserAsync(user);
+        return user;
     }
 
-    public void Post(int id, [FromBody] User user)
+    [HttpPost("/users/{id}")]
+    public async Task Post(string id, [FromBody] User user)
     {
-        throw new NotImplementedException();
+        user.Id = id;
+        await _repository.SaveUserAsync(user);
     }
-    public void Delete(int id)
+    [HttpDelete("/users/{id}")]
+    public async Task Delete(string id)
     {
-        throw new NotImplementedException();
+        var team = await _repository.GetUserAsync(id);
+        await _repository.DeleteUserAsync(team);
+    }
+
+    [HttpPost("/set/{id}/admin")]
+    public async Task SetAdmin(string id)
+    {
+        var user = await _repository.GetUserAsync(id);
+        user.isAdmin = true;
+        await _repository.SaveUserAsync(user);
+    }
+    [HttpPost("/unset/{id}/admin")]
+    public async Task UnsetAdmin(string id)
+    {
+        var user = await _repository.GetUserAsync(id);
+        user.isAdmin = false;
+        await _repository.SaveUserAsync(user);
+    }
+
+    [HttpGet("/communities/guide/{id}")]
+    public async Task<IEnumerable<Community>> GetCommunitiesGuideOf(string id)
+    {
+        return await _repository.GetGuidesOfAsync(id);
+    }
+
+    [HttpGet("/communities/member/{id}")]
+    public async Task<Community> GetCommunityMemberOf(string id)
+    {
+        return (await _repository.GetCommunitiesAsync(id)).FirstOrDefault();
+    }
+    [HttpGet("/teams/member/{id}")]
+    public async Task<IEnumerable<Team>> GetTeamsMemberOf(string id)
+    {
+        return await _repository.GetTeamsAsync(id);
     }
 }

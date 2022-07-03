@@ -1,33 +1,58 @@
 using CY_API.Controllers.Interfaces;
 using CY_API.Models;
+using CY_API.Models.Parameters;
+using CY_API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CY_API.Controllers;
 
-[Route("api/[controller]")]
-public class TeamsController : ControllerBase,ICrudController<Team,TeamParameters>
+public class TeamsController : ControllerBase, ICrudController<Team, TeamParameters>
 {
-    public IEnumerable<Team> Get([FromQuery] TeamParameters teamParams)
+    private readonly ITeamRepository _repository;
+
+    public TeamsController(ITeamRepository teamRepository)
     {
-        throw new NotImplementedException();
+        _repository = teamRepository;
     }
 
-    public string Get(int id)
+    [HttpGet("/teams")]
+    public async Task<IEnumerable<Team>> Get([FromQuery] TeamParameters teamParams)
     {
-        throw new NotImplementedException();
+        return await _repository.GetTeamsAsync();
     }
 
-    public void Post([FromBody] Team team)
+    [HttpGet("/teams/{id}")]
+    public async Task<Team> Get(string id)
     {
-        throw new NotImplementedException();
+        return await _repository.GetTeamAsync(id);
     }
 
-    public void Post(int id, [FromBody] Team team)
+    [HttpPost("teams")]
+    public async Task<Team> Post([FromBody] Team team)
     {
-        throw new NotImplementedException();
+        team.Id = Guid.NewGuid().ToString();
+        await _repository.SaveTeamAsync(team);
+        return team;
     }
-    public void Delete(int id)
+
+    [HttpPost("/teams/{id}")]
+    public async Task Post(string id, [FromBody] Team team)
     {
-        throw new NotImplementedException();
+        team.Id = id;
+        await _repository.SaveTeamAsync(team);
     }
+
+    [HttpDelete("/teams/{id}")]
+    public async Task Delete(string id)
+    {
+        var team = await _repository.GetTeamAsync(id);
+        await _repository.DeleteTeamAsync(team);
+    }
+
+    [HttpGet("/users/members/team/{id}")]
+    public async Task<IEnumerable<User>> GetUsers(string id)
+    {
+        return await _repository.GetUsersAsync(id);
+    }
+
 }

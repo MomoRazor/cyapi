@@ -1,32 +1,71 @@
 using CY_API.Models;
+using CY_API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CY_API.Controllers;
 
-[Route("api/[controller]")]
 public class AssignController : ControllerBase
 {
-    public IEnumerable<Community> Get()
+    private readonly IUserRepository _userRepository;
+    private readonly ITeamRepository _teamRepository;
+    private readonly ICommunityRepository _communityRepository;
+    public AssignController(IUserRepository userRepository,ITeamRepository teamRepository,ICommunityRepository communityRepository)
     {
-        throw new NotImplementedException();
+        _userRepository = userRepository;
+        _teamRepository = teamRepository;
+        _communityRepository = communityRepository;
     }
 
-    public string Get(int id)
+    [HttpPost("/assign/{userId}/team/{teamId}")]
+    public async Task AssignUserTeam(string userId, string teamId)
     {
-        throw new NotImplementedException();
+        var user = await _userRepository.GetUserAsync(userId);
+        var team = await _teamRepository.GetTeamAsync(teamId);
+        await _userRepository.SaveTeamAsync(userId, team);
+        await _teamRepository.SaveUserAsync(teamId, user);
     }
-
-    public void Post([FromBody] Community poco)
+    [HttpPost("/unassign/{userId}/team/{teamId}")]
+    public async Task UnassignUserTeam(string userId, string teamId)
     {
-        throw new NotImplementedException();
+        var user = await _userRepository.GetUserAsync(userId);
+        var team = await _teamRepository.GetTeamAsync(teamId);
+        await _userRepository.DeleteTeamAsync(userId, team);
+        await _teamRepository.DeleteUserAsync(teamId, user);
     }
-
-    public void Post(int id, [FromBody] Community poco)
+    [Route("assign")]
+    [HttpPost("/assign/{userId}/community/{communityId}/member")]
+    public async Task AssignUserCommunityMember(string userId, string communityId)
     {
-        throw new NotImplementedException();
+        var user = await _userRepository.GetUserAsync(userId);
+        var community = await _communityRepository.GetCommunityAsync(communityId);
+        await _userRepository.SaveCommunityAsync(userId, community);
+        await _communityRepository.SaveUserAsync(communityId, user);
     }
-    public void Delete(int id)
+    [Route("unassign")]
+    [HttpPost("/unassign/{userId}/community/{communityId}/member")]
+    public async Task UnassignUserCommunityMember(string userId, string communityId)
     {
-        throw new NotImplementedException();
+        var user = await _userRepository.GetUserAsync(userId);
+        var community = await _communityRepository.GetCommunityAsync(communityId);
+        await _userRepository.DeleteCommunityAsync(userId, community);
+        await _communityRepository.DeleteUserAsync(communityId, user);
+    }
+    [Route("assign")]
+    [HttpPost("/assign/{userId}/community/{communityId}/guide")]
+    public async Task AssignUserCommunityGuide(string userId, string communityId)
+    {
+        var user = await _userRepository.GetUserAsync(userId);
+        var community = await _communityRepository.GetCommunityAsync(communityId);
+        await _userRepository.SaveGuideOfAsync(userId, community);
+        await _communityRepository.SaveGuideAsync(communityId, user);
+    }
+    [Route("unassign")]
+    [HttpPost("/unassign/{userId}/community/{communityId}/guide")]
+    public async Task UnassignUserCommunityGuide(string userId, string communityId)
+    {
+        var user = await _userRepository.GetUserAsync(userId);
+        var community = await _communityRepository.GetCommunityAsync(communityId);
+        await _userRepository.DeleteGuideOfAsync(userId, community);
+        await _communityRepository.DeleteGuideAsync(communityId, user);
     }
 }

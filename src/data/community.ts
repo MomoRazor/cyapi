@@ -3,6 +3,8 @@ import { model, Schema } from 'mongoose'
 export interface Community {
     _id: string
     name: string
+    memberIds: string[]
+    guideIds: string[]
 }
 
 const { String } = Schema.Types
@@ -10,6 +12,9 @@ const { String } = Schema.Types
 const communitySchema = new Schema(
     {
         name: { type: String, required: true, trim: true },
+        memberIds: { type: [String], required: true, default: [] },
+        guideIds: { type: [String], required: true, default: [] },
+        deleted: { type: Boolean, required: false, default: false },
     },
     { timestamps: true }
 )

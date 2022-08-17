@@ -1,19 +1,86 @@
-import { User, userRepo } from '../data'
+import { User, userRepo, communityRepo, teamRepo } from '../data'
 import admin from 'firebase-admin'
 import crypto from 'crypto'
 import { BaseService } from './base'
+import { FilterQuery } from 'mongoose'
 
 export const UserService = () => {
     const baseService = BaseService<User>(userRepo)
 
+    const resolve = async (document: User) => {
+        return await resolveMemberCommunity(
+            await resolveMemberTeam(await resolveGuideCommunities(document))
+        )
+    }
+
+    const resolveMemberTeam = async (document: User) => {
+        const teams = await teamRepo.find({
+            memberIds: {
+                $in: [document._id],
+            },
+        })
+
+        if (!teams) {
+            return document
+        } else {
+            return {
+                ...document,
+                teamMemberOf: teams,
+            }
+        }
+    }
+
+    const resolveMemberCommunity = async (document: User) => {
+        const community = await communityRepo.findOne({
+            memberIds: {
+                $in: [document._id],
+            },
+        })
+
+        if (!community) {
+            return document
+        } else {
+            return {
+                ...document,
+                communityMemberOf: community,
+            }
+        }
+    }
+
+    const resolveGuideCommunities = async (document: User) => {
+        const communities = await communityRepo.find({
+            guideIds: {
+                $in: [document._id],
+            },
+        })
+
+        if (!communities) {
+            return document
+        } else {
+            return {
+                ...document,
+                communitiesGuideOf: communities,
+            }
+        }
+    }
+
     const getUserByUid = async (uid: string) => {
-        return (await userRepo.findOne({ uid }))?.toObject()
+        const user = await userRepo.findOne({ uid })
+
+        const userDoc = user?.toObject()
+
+        if (!userDoc) {
+            throw new Error('Failed to load User')
+        }
+
+        return await resolve(userDoc)
     }
 
     const upsertFirebaseUser = async (
         uid: string | undefined,
         user: {
             email: string
+            password?: string
         }
     ) => {
         if (!user?.email) throw new Error(`Missing user details!`)
@@ -28,7 +95,8 @@ export const UserService = () => {
 
         // Create
         try {
-            const tempPass = crypto.randomBytes(10).toString(`hex`)
+            const tempPass =
+                user.password || crypto.randomBytes(10).toString(`hex`)
 
             const firebaseUser = await admin.auth().createUser({
                 ...user,
@@ -58,6 +126,7 @@ export const UserService = () => {
         user: Partial<{
             _id?: string
             email: string
+            password?: string
             displayName: string
             isAdmin: boolean
         }>
@@ -84,6 +153,7 @@ export const UserService = () => {
 
         const creationResult = await upsertFirebaseUser(undefined, {
             email: user.email,
+            password: user.password,
         })
 
         try {
@@ -105,9 +175,44 @@ export const UserService = () => {
             const mongoUser = await userRepo.findOne({
                 uid: creationResult.user.uid,
             })
-            return mongoUser
+
+            if (mongoUser) {
+                return await resolve(mongoUser.toObject())
+            } else {
+                return
+            }
         }
     }
 
-    return { ...baseService, getUserByUid, upsert }
+    const getById = async (_id: string) => {
+        const user = await baseService.getById(_id)
+
+        return await resolve(user)
+    }
+
+    const getMany = async (args: {
+        limit?: number
+        page?: number
+        sort?: string
+        search?: string[]
+        filter?: FilterQuery<User>
+    }) => {
+        const users = await baseService.getMany(args)
+
+        console.log(users)
+
+        return {
+            ...users,
+            data: await Promise.all(
+                users.data.map(
+                    async (datum: any) =>
+                        await resolveMemberTeam(
+                            await resolveMemberCommunity(datum)
+                        )
+                )
+            ),
+        }
+    }
+
+    return { ...baseService, getMany, getById, getUserByUid, upsert }
 }

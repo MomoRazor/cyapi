@@ -6,7 +6,7 @@ export const userRoutes = (app: Application) => {
     const communityService = CommunityService()
     const teamService = TeamService()
 
-    app.get(`/user/:uid`, async (req, res, next) => {
+    app.get(`/users/:uid`, async (req, res, next) => {
         try {
             const { uid } = req.params
 

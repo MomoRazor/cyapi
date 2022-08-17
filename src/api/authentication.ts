@@ -10,28 +10,33 @@ export const authenticationRoutes = (app: Application) => {
         const { headers } = req
         const { authorization } = headers
 
-        if (!authorization)
+        if (!authorization) {
+            console.log('test')
             return res.status(401).json(`Authorization header is required!`)
+        }
 
         const [keyword, token] = authorization.split(` `)
 
-        if (keyword.toLowerCase() !== `bearer` || !token)
+        if (keyword.toLowerCase() !== `bearer` || !token) {
+            console.log('test2')
             return res
                 .status(401)
                 .json(
                     `Authorization header must be in the "bearer <token>" format!`
                 )
+        }
 
         try {
             const user = await admin.auth().verifyIdToken(token)
             const { uid } = user
 
             const userDocument = await userService.getUserByUid(uid)
-            if (!userDocument)
+            if (!userDocument) {
+                console.log('test3')
                 return res.status(401).json(`User does not exist in mongo!`)
+            }
 
             res.locals.user = userDocument
-            res.locals.roles = []
 
             const { isAdmin } = userDocument
 
@@ -40,11 +45,9 @@ export const authenticationRoutes = (app: Application) => {
             } else {
                 res.locals.isAdmin = false
             }
-
-            if (res.locals.roles.length === 0)
-                return res.status(401).json(`The user has no role assigned!`)
         } catch (e) {
             console.error(e)
+            console.log('test5')
             return res
                 .status(401)
                 .json({ message: `An invalid token was supplied!` })

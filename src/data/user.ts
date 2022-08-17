@@ -1,4 +1,6 @@
 import { model, Schema } from 'mongoose'
+import { Community } from './community'
+import { Team } from './team'
 
 export interface User {
     _id: string
@@ -6,6 +8,9 @@ export interface User {
     email: string
     displayName: string
     isAdmin: boolean
+    communityMemberOf?: Community
+    communitiesGuideOf?: Community[]
+    teamMemberOf?: Team[]
 }
 
 const { String, Boolean } = Schema.Types

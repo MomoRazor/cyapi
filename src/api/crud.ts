@@ -47,6 +47,32 @@ export const crudRoutes = (app: Application, serviceMap: any) => {
         }
     })
 
+    app.post(`/:collection/:id`, async (req, res) => {
+        try {
+            const { collection, id } = req.params
+            const { body } = req
+
+            let data: any = undefined
+
+            if (!serviceMap[collection]) return res.status(404).json()
+
+            data = await serviceMap[collection].upsert(
+                {
+                    _id: id,
+                    ...body,
+                },
+                res
+            )
+
+            return res.status(200).json(data)
+        } catch (e: any) {
+            console.error(e)
+            return res.status(500).json({
+                message: e.message,
+            })
+        }
+    })
+
     app.post(`/:collection`, async (req, res) => {
         try {
             const { collection } = req.params

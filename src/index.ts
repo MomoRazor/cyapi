@@ -11,6 +11,7 @@ const setup = async () => {
         await userService.upsert({
             displayName: 'Maurovic Cachia',
             email: `maurovic.cachia@gmail.com`,
+            password: '000000',
             isAdmin: true,
         })
     } catch (e) {

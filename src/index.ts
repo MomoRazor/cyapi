@@ -1,37 +1,51 @@
-import { MONGO_URL, FIREBASE_SERVICE_ACCOUNT } from './env'
-import { connect } from 'mongoose'
+import mongoose from 'mongoose'
+import { FIREBASE_SERVICE_ACCOUNT, MONGO_URL, PORT } from './env'
 import admin from 'firebase-admin'
-import { UserService } from './services'
-import { startApp } from './api'
-
-const setup = async () => {
-    const userService = UserService()
-
-    try {
-        await userService.upsert({
-            displayName: 'Maurovic Cachia',
-            email: `maurovic.cachia@gmail.com`,
-            password: '000000',
-            isAdmin: true,
-        })
-    } catch (e) {
-        console.warn(e)
-    }
-}
+import { startApp } from './util'
+import { UserRepo } from './data/UserRepo'
+import { TeamRepo } from './data/TeamRepo'
+import { CommunityRepo } from './data/CommunityRepo'
+import cors from 'cors'
+import express from 'express'
+import morgan from 'morgan'
+import { EventRepo } from './data/EventRepo'
 
 const main = async () => {
+    // Init database
+    const databaseConnection = mongoose.createConnection(MONGO_URL)
+    console.info(`Connected to Mongo!`)
+
+    // Init firebase auth
     admin.initializeApp({
         credential: admin.credential.cert(FIREBASE_SERVICE_ACCOUNT),
     })
-    console.log(`Connected to Firebase!`)
+    console.info(`Connected to Firebase!`)
 
-    await connect(MONGO_URL)
-    console.log(`Connected to Mongo!`)
+    // Init Repository
+    const userRepo = await UserRepo(databaseConnection)
+    const teamRepo = await TeamRepo(databaseConnection)
+    const communityRepo = await CommunityRepo(databaseConnection)
+    const eventRepo = await EventRepo(databaseConnection)
 
-    await setup()
-    console.log(`Initialised data!`)
+    // Init Service
 
-    await startApp()
+    // Init Data
+    await startApp(userRepo)
+    console.info(`Initialised data!`)
+
+    // Init web server
+    const app = express()
+    app.use(express.json({ limit: '1mb' }))
+    app.use(cors())
+    app.use(morgan('dev'))
+
+    // Init Routes
+
+    // Start application
+    app.listen(PORT, () => {
+        console.log(`CY API Initialised!`)
+        console.log(`========================`)
+    })
 }
 
 main()

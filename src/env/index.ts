@@ -23,8 +23,3 @@ export const FIREBASE_SERVICE_ACCOUNT: ServiceAccount = {
     privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/gm, '\n'),
     projectId: process.env.FIREBASE_PROJECT_ID,
 }
-
-if (!process.env.DEVELOPMENT)
-    console.log('DEVELOPMENT env variable not set, assuming true')
-
-export const DEVELOPMENT = process.env.DEVELOPMENT || true

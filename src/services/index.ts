@@ -1,4 +1,2 @@
-export * from './user'
-export * from './base'
-export * from './community'
-export * from './team'
+export * from './CommunitySvc'
+export * from './TeamSvc'

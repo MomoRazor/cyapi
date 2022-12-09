@@ -1,8 +1,9 @@
 import { Application } from 'express'
+import { ICommunitySvc } from '../services'
 
 export const CommunityApi = (
     app: Application,
-    communityService: ICommunityService
+    communityService: ICommunitySvc
 ) => {
     app.post(`/create/community`, async (req, res) => {
         try {

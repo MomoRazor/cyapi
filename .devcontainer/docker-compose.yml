@@ -6,15 +6,13 @@ services:
             context: .
             dockerfile: Dockerfile
             args:
-                VARIANT: 16
                 USER_UID: 1000
                 USER_GID: 1000
+
+        ports:
+            - '8082:8082'
+
         volumes:
             - ..:/workspace:cached
+
         command: sleep infinity
-        ports:
-            - 60000:60000
-    db:
-        image: mongo:5
-        ports:
-            - 27017:27017

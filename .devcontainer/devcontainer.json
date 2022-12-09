@@ -1,26 +1,20 @@
 {
-	"name": "CY Backend",
-	"dockerComposeFile": "docker-compose.yml",
-	"service": "app",
-	"workspaceFolder": "/workspace",
+    "name": "CAM Youths Service",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/workspace",
 
-	"settings": {
-		"terminal.integrated.shell.linux": "/bin/bash"
-	},
+    "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+    },
 
-	"extensions": [
-		"dbaeumer.vscode-eslint",
-		"mongodb.mongodb-vscode",
-		"visualstudioexptteam.vscodeintellicode",
-		"ms-azuretools.vscode-docker",
-		"2gua.rainbow-brackets",
-		"esbenp.prettier-vscode",
-		"ms-vscode.vscode-typescript-next",
-		"oderwat.indent-rainbow",
-		"gruntfuggly.todo-tree",
-		"pkief.material-icon-theme",
-		"eamodio.gitlens"
-	],
+    "extensions": [
+        "dbaeumer.vscode-eslint",
+        "visualstudioexptteam.vscodeintellicode",
+        "ms-azuretools.vscode-docker",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next"
+    ],
 
-	"remoteUser": "node"
+    "remoteUser": "node"
 }

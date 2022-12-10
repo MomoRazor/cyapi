@@ -16,7 +16,6 @@ export const TeamSvc = (teamRepo: ITeamRepo): ITeamSvc => {
     const getTable = async (pagination: PaginationFilter) => {
         const fullFilter = {
             ...pagination.filter,
-            system: false,
         }
 
         const data = await teamRepo
@@ -39,7 +38,6 @@ export const TeamSvc = (teamRepo: ITeamRepo): ITeamSvc => {
 
         const autoFilter = {
             ...filter,
-            system: false,
             name: {
                 $regex: search || '',
                 $options: 'ig',

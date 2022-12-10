@@ -2,6 +2,7 @@ import { Connection, Model, Schema } from 'mongoose'
 
 export interface Team {
     name: string
+    memberIds: string[]
 }
 
 export interface ResolvedTeam extends Team {}
@@ -13,6 +14,7 @@ export type ITeamRepo = Model<Team>
 const teamSchema = new Schema(
     {
         name: { type: String, required: true, trim: true },
+        memberIds: { type: [String], required: true, trim: true },
     },
     { timestamps: true }
 )

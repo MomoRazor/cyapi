@@ -4,8 +4,8 @@ import { TeamRepo, CommunityRepo } from './data'
 import cors from 'cors'
 import express from 'express'
 import helmet from 'helmet'
-import { CommunitySvc, TeamSvc } from './services'
-import { AuthApi } from './api'
+import { CommunitySvc, TeamSvc } from './svc'
+import { AuthApi, CommunityApi, TeamApi } from './api'
 
 const main = async () => {
     // Init database
@@ -29,7 +29,8 @@ const main = async () => {
 
     // Init Routes
     AuthApi(app)
-    //TODO add community and team
+    CommunityApi(app, communitySvc, prefix)
+    TeamApi(app, teamSvc, prefix)
 
     // Start application
     app.listen(PORT, () => {

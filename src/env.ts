@@ -10,6 +10,8 @@ if (!process.env.MONGO_URL)
 
 export const MONGO_URL = process.env.MONGO_URL
 
-if (!process.env.JWT_SECRET)
-    throw new Error(`Missing environment variable JWT_SECRET!`)
-export const JWT_SECRET = process.env.JWT_SECRET
+if (!process.env.RBAC_SECRET && !process.env.API_KEY)
+    throw new Error(`Missing both RBAC_SECRET and API_KEY environment variables!`);
+
+export const RBAC_SECRET = process.env.RBAC_SECRET;
+export const API_KEY = process.env.API_KEY;

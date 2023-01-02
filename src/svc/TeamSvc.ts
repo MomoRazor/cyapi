@@ -14,18 +14,17 @@ export interface ITeamSvc {
 
 export const TeamSvc = (teamRepo: ITeamRepo): ITeamSvc => {
     const getTable = async (pagination: PaginationFilter) => {
-        const fullFilter = {
-            ...pagination.filter,
-        }
+
+        const {filter, page=0, sort, limit=0} = pagination
 
         const data = await teamRepo
-            .find(fullFilter, pagination.projection)
-            .sort(pagination.sort)
-            .skip((pagination.page - 1) * pagination.limit)
-            .limit(pagination.limit)
+            .find(filter, pagination.projection)
+            .sort(sort)
+            .skip((page - 1) * limit)
+            .limit(limit)
             .lean()
 
-        const total = await teamRepo.countDocuments(fullFilter)
+        const total = await teamRepo.countDocuments(filter)
 
         return {
             data,
@@ -34,7 +33,7 @@ export const TeamSvc = (teamRepo: ITeamRepo): ITeamSvc => {
     }
 
     const getAutocomplete = async (info: AutocompleteFilter) => {
-        const { filter, search, limit } = info
+        const { filter, search, limit=0 } = info
 
         const autoFilter = {
             ...filter,

@@ -157,8 +157,8 @@ export const parseProjectionString = (stringProjection: string): any => {
 export const aggregationPagination = (
     pagination: PaginationFilter,
     projection?: string
-) => {
-    const { filter, page, limit, sort } = pagination
+): PipelineStage[] => {
+    const { filter, page=0, limit=0, sort } = pagination
 
     let aggregationPagination: PipelineStage[] = []
 

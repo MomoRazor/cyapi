@@ -19,18 +19,16 @@ export interface ICommunitySvc {
 
 export const CommunitySvc = (communityRepo: ICommunityRepo): ICommunitySvc => {
     const getTable = async (pagination: PaginationFilter) => {
-        const fullFilter = {
-            ...pagination.filter,
-        }
+        const {filter, sort, page=0, limit=0} = pagination
 
         const data = await communityRepo
-            .find(fullFilter, pagination.projection)
-            .sort(pagination.sort)
-            .skip((pagination.page - 1) * pagination.limit)
-            .limit(pagination.limit)
+            .find(filter, pagination.projection)
+            .sort(sort)
+            .skip((page - 1) * limit)
+            .limit(limit)
             .lean()
 
-        const total = await communityRepo.countDocuments(fullFilter)
+        const total = await communityRepo.countDocuments(filter)
 
         return {
             data,
@@ -39,7 +37,7 @@ export const CommunitySvc = (communityRepo: ICommunityRepo): ICommunitySvc => {
     }
 
     const getAutocomplete = async (info: AutocompleteFilter) => {
-        const { filter, search, limit } = info
+        const { filter, search, limit=0 } = info
 
         const autoFilter = {
             ...filter,

@@ -1,9 +1,9 @@
 import mongoose from 'mongoose'
+import morgan from 'morgan'
 import { MONGO_URL, PORT } from './env'
 import { TeamRepo, CommunityRepo, UserRepo } from './data'
 import cors from 'cors'
 import express from 'express'
-import helmet from 'helmet'
 import { CommunitySvc, TeamSvc, UserSvc } from './svc'
 import { AuthApi, CommunityApi, TeamApi, UserApi } from './api'
 
@@ -24,8 +24,9 @@ const main = async () => {
 
     // Init web server
     const app = express()
-    app.use(cors())
-    app.use(helmet())
+	app.use(express.json({ limit: '1mb' }))
+	app.use(cors())
+	app.use(morgan('dev'))
 
     // Init Routes
     AuthApi(app)

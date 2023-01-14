@@ -40,7 +40,7 @@ export const UserSvc = (userRepo: IUserRepo): IUserSvc => {
             }
         ]
 
-        aggregation = aggregation.concat(aggregationPagination(pagination))
+        aggregation = aggregation.concat(aggregationPagination(pagination, ['_id']))
 
         const data = await userRepo.aggregate(aggregation)
 
@@ -91,7 +91,7 @@ export const UserSvc = (userRepo: IUserRepo): IUserSvc => {
         aggregation = aggregation.concat(aggregationPagination({
             filter: autoFilter,
             limit
-        }))
+        }, ['_id']))
 
         const data = await userRepo.aggregate(aggregation)
 

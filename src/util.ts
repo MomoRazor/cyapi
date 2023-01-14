@@ -1,4 +1,4 @@
-import { PipelineStage } from 'mongoose'
+import mongoose, { PipelineStage } from 'mongoose'
 import { PaginationFilter } from './data'
 
 export interface DecodedIdToken {
@@ -156,6 +156,7 @@ export const parseProjectionString = (stringProjection: string): any => {
 
 export const aggregationPagination = (
     pagination: PaginationFilter,
+    objectIdKeys?: string[],
     projection?: string
 ): PipelineStage[] => {
     const { filter, page=0, limit=0, sort } = pagination
@@ -164,7 +165,7 @@ export const aggregationPagination = (
 
     if (filter && Object.keys(filter).length > 0) {
         aggregationPagination.push({
-            $match: filter,
+            $match: parseObjectIds(filter,objectIdKeys),
         })
     }
 
@@ -231,4 +232,32 @@ export const checkProjection = (entity: string, stringProjection: string) => {
         list.length === 0 ||
         list.some((project) => project.includes(entity + '.'))
     )
+}
+
+export const parseObjectIds = (filter: any, objectIdKeys?: string[]) => {
+
+    if(!objectIdKeys || objectIdKeys.length === 0){
+        return filter
+    }
+
+    const parsedFilter = filter
+    const keys = Object.keys(filter)
+    for(let i = 0; i < keys.length; i++){
+        if(objectIdKeys.includes(keys[i])){
+            parsedFilter[keys[i]] = traverseAndParse(filter[keys[i]])
+        }
+    }
+
+    return parsedFilter
+}
+
+export const traverseAndParse:any = (filter: any) => {
+    if(typeof filter === 'string'){
+        return new mongoose.Types.ObjectId(filter)
+    }else{
+        const keys = Object.keys(filter)
+
+        return traverseAndParse(filter[keys[0]])
+
+    }
 }

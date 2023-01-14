@@ -6,9 +6,16 @@ export const UserApi = (
     userService: IUserSvc,
     prefix: string = ''
 ) => {
-    app.post(`${prefix}/login`, async (req, res) => {
+    app.post(`${prefix}/login`, async (_, res) => {
         try {
-            const { uid } = req.body
+            if(!res.locals.firebaseUser){
+                return res.status(400).json({
+                    data: null,
+                    errors: ['Missing Uid!'],
+                }) 
+            }
+            
+            const {uid} = res.locals.firebaseUser
 
             if (!uid) {
                 return res.status(400).json({

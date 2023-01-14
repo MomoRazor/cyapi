@@ -4,7 +4,7 @@ import { ITeamSvc } from '../svc'
 export const TeamApi = (
     app: Application,
     teamService: ITeamSvc,
-    prefix: string
+    prefix: string = ''
 ) => {
     app.post(`${prefix}/create/teams`, async (req, res) => {
         try {

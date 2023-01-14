@@ -22,8 +22,6 @@ const main = async () => {
     const teamSvc = TeamSvc(teamRepo)
     const communitySvc = CommunitySvc(communityRepo)
 
-    const prefix = '/cam'
-
     // Init web server
     const app = express()
     app.use(cors())
@@ -31,9 +29,9 @@ const main = async () => {
 
     // Init Routes
     AuthApi(app)
-    CommunityApi(app, communitySvc, prefix)
-    TeamApi(app, teamSvc, prefix)
-    UserApi(app, userSvc, prefix)
+    CommunityApi(app, communitySvc)
+    TeamApi(app, teamSvc)
+    UserApi(app, userSvc)
 
     // Start application
     app.listen(PORT, () => {

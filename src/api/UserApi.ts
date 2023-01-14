@@ -4,7 +4,7 @@ import { IUserSvc } from '../svc'
 export const UserApi = (
     app: Application,
     userService: IUserSvc,
-    prefix: string
+    prefix: string = ''
 ) => {
     app.post(`${prefix}/login`, async (req, res) => {
         try {

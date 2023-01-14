@@ -4,7 +4,7 @@ import { ICommunitySvc } from '../svc'
 export const CommunityApi = (
     app: Application,
     communityService: ICommunitySvc,
-    prefix: string
+    prefix: string = ''
 ) => {
     app.post(`${prefix}/create/communities`, async (req, res) => {
         try {

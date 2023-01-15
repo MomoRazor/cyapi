@@ -7,14 +7,14 @@ export interface Team {
 
 export interface ResolvedTeam extends Team {}
 
-const { String } = Schema.Types
+const { String, ObjectId } = Schema.Types
 
 export type ITeamRepo = Model<Team>
 
 const teamSchema = new Schema(
     {
         name: { type: String, required: true, trim: true },
-        memberIds: { type: [String], required: true, trim: true },
+        memberIds: { type: [ObjectId], required: true, trim: true },
     },
     { timestamps: true }
 )

@@ -8,15 +8,15 @@ export interface Community {
 
 export interface ResolvedCommunity extends Community {}
 
-const { String } = Schema.Types
+const { String, ObjectId } = Schema.Types
 
 export type ICommunityRepo = Model<Community>
 
 const communitySchema = new Schema(
     {
         name: { type: String, required: true, trim: true },
-        guideIds: { type: [String], required: true, trim: true },
-        memberIds: { type: [String], required: true, trim: true },
+        guideIds: { type: [ObjectId], required: true, trim: true },
+        memberIds: { type: [ObjectId], required: true, trim: true },
     },
     { timestamps: true }
 )

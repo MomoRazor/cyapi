@@ -140,4 +140,58 @@ export const TeamApi = (
             })
         }
     })
+
+    app.post(`${prefix}/assign/member/:userId/team/:teamId`, async (req, res) => {
+        try {
+            const { id } = req.body
+            const { userId, teamId } = req.params
+
+            if (!id) {
+                return res.status(400).json({
+                    data: null,
+                    errors: ['Missing Id!'],
+                })
+            }
+
+            const team = await teamService.assignMember(userId, teamId)
+
+            return res.status(200).json({
+                data: team,
+                errors: [],
+            })
+        } catch (e: any) {
+            console.error(e)
+            return res.status(500).json({
+                data: null,
+                errors: [e.message],
+            })
+        }
+    })
+
+    app.post(`${prefix}/unassign/member/:userId/team/:teamId`, async (req, res) => {
+        try {
+            const { id } = req.body
+            const { userId, teamId } = req.params
+
+            if (!id) {
+                return res.status(400).json({
+                    data: null,
+                    errors: ['Missing Id!'],
+                })
+            }
+
+            const team = await teamService.unassignMember(userId, teamId)
+
+            return res.status(200).json({
+                data: team,
+                errors: [],
+            })
+        } catch (e: any) {
+            console.error(e)
+            return res.status(500).json({
+                data: null,
+                errors: [e.message],
+            })
+        }
+    })
 }

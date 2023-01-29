@@ -140,4 +140,112 @@ export const CommunityApi = (
             })
         }
     })
+
+    app.post(`${prefix}/assign/member/:userId/community/:communityId`, async (req, res) => {
+        try {
+            const { id } = req.body
+            const { userId, communityId } = req.params
+
+            if (!id) {
+                return res.status(400).json({
+                    data: null,
+                    errors: ['Missing Id!'],
+                })
+            }
+
+            const community = await communityService.assignMember(userId, communityId)
+
+            return res.status(200).json({
+                data: community,
+                errors: [],
+            })
+        } catch (e: any) {
+            console.error(e)
+            return res.status(500).json({
+                data: null,
+                errors: [e.message],
+            })
+        }
+    })
+
+    app.post(`${prefix}/unassign/member/:userId/community/:communityId`, async (req, res) => {
+        try {
+            const { id } = req.body
+            const { userId, communityId } = req.params
+
+            if (!id) {
+                return res.status(400).json({
+                    data: null,
+                    errors: ['Missing Id!'],
+                })
+            }
+
+            const community = await communityService.unassignMember(userId, communityId)
+
+            return res.status(200).json({
+                data: community,
+                errors: [],
+            })
+        } catch (e: any) {
+            console.error(e)
+            return res.status(500).json({
+                data: null,
+                errors: [e.message],
+            })
+        }
+    })
+
+    app.post(`${prefix}/assign/guide/:userId/community/:communityId`, async (req, res) => {
+        try {
+            const { id } = req.body
+            const { userId, communityId } = req.params
+
+            if (!id) {
+                return res.status(400).json({
+                    data: null,
+                    errors: ['Missing Id!'],
+                })
+            }
+
+            const community = await communityService.assignGuide(userId, communityId)
+
+            return res.status(200).json({
+                data: community,
+                errors: [],
+            })
+        } catch (e: any) {
+            console.error(e)
+            return res.status(500).json({
+                data: null,
+                errors: [e.message],
+            })
+        }
+    })
+
+    app.post(`${prefix}/unassign/guide/:userId/community/:communityId`, async (req, res) => {
+        try {
+            const { id } = req.body
+            const { userId, communityId } = req.params
+
+            if (!id) {
+                return res.status(400).json({
+                    data: null,
+                    errors: ['Missing Id!'],
+                })
+            }
+
+            const community = await communityService.unassignGuide(userId, communityId)
+
+            return res.status(200).json({
+                data: community,
+                errors: [],
+            })
+        } catch (e: any) {
+            console.error(e)
+            return res.status(500).json({
+                data: null,
+                errors: [e.message],
+            })
+        }
+    })
 }

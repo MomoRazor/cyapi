@@ -10,6 +10,8 @@ export interface ITeamSvc {
     update: (teamId: string, data: Partial<Team>) => Promise<Team>
     create: (data: Team) => Promise<Team>
     deleteOne: (teamId: string) => Promise<void>
+    assignMember: (userId: string, communityId: string) => Promise<Team>
+    unassignMember: (userId: string, communityId: string) => Promise<Team>
 }
 
 export const TeamSvc = (teamRepo: ITeamRepo): ITeamSvc => {
@@ -103,6 +105,50 @@ export const TeamSvc = (teamRepo: ITeamRepo): ITeamSvc => {
         await teamRepo.findByIdAndDelete(teamId)
     }
 
+    const assignMember = async (userId: string, teamId: string) => {
+        const currentTeam = await teamRepo
+            .findById(teamId)
+            .lean()
+
+        if (!currentTeam) {
+            throw new Error('Could not find Team')
+        }
+
+        const updatedTeam = await teamRepo.findByIdAndUpdate(teamId, {
+            $push: {
+                memberIds: userId
+            }
+        }, { new: true })
+
+        if(!updatedTeam){
+            throw new Error('Could not get new team')
+        }
+
+        return updatedTeam
+    }
+
+    const unassignMember = async (userId: string, teamId: string) => {
+        const currentTeam = await teamRepo
+            .findById(teamId)
+            .lean()
+
+        if (!currentTeam) {
+            throw new Error('Could not find Team')
+        }
+
+        const updatedTeam = await teamRepo.findByIdAndUpdate(teamId, {
+            $pull: {
+                memberIds: userId
+            }
+        }, { new: true })
+
+        if(!updatedTeam){
+            throw new Error('Could not get new team')
+        }
+
+        return updatedTeam
+    }
+
     return {
         deleteOne,
         getTable,
@@ -110,5 +156,7 @@ export const TeamSvc = (teamRepo: ITeamRepo): ITeamSvc => {
         getById,
         update,
         create,
+        assignMember,
+        unassignMember,
     }
 }

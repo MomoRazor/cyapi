@@ -15,6 +15,10 @@ export interface ICommunitySvc {
     ) => Promise<Community>
     create: (data: Community) => Promise<Community>
     deleteOne: (communityId: string) => Promise<void>
+    assignMember: (userId: string, communityId: string) => Promise<Community>
+    unassignMember: (userId: string, communityId: string) => Promise<Community>
+    assignGuide: (userId: string, communityId: string) => Promise<Community>
+    unassignGuide: (userId: string, communityId: string) => Promise<Community>
 }
 
 export const CommunitySvc = (communityRepo: ICommunityRepo): ICommunitySvc => {
@@ -112,6 +116,94 @@ export const CommunitySvc = (communityRepo: ICommunityRepo): ICommunitySvc => {
         await communityRepo.findByIdAndDelete(communityId)
     }
 
+    const assignMember = async (userId: string, communityId: string) => {
+        const currentCommunity = await communityRepo
+            .findById(communityId)
+            .lean()
+
+        if (!currentCommunity) {
+            throw new Error('Could not find Community')
+        }
+
+        const updatedCommunity = await communityRepo.findByIdAndUpdate(communityId, {
+            $push: {
+                memberIds: userId
+            }
+        }, { new: true })
+
+        if(!updatedCommunity){
+            throw new Error('Could not get new community')
+        }
+
+        return updatedCommunity
+    }
+
+    const unassignMember = async (userId: string, communityId: string) => {
+        const currentCommunity = await communityRepo
+            .findById(communityId)
+            .lean()
+
+        if (!currentCommunity) {
+            throw new Error('Could not find Community')
+        }
+
+        const updatedCommunity = await communityRepo.findByIdAndUpdate(communityId, {
+            $pull: {
+                memberIds: userId
+            }
+        }, { new: true })
+
+        if(!updatedCommunity){
+            throw new Error('Could not get new community')
+        }
+
+        return updatedCommunity
+    }
+
+    const assignGuide = async (userId: string, communityId: string) => {
+        const currentCommunity = await communityRepo
+            .findById(communityId)
+            .lean()
+
+        if (!currentCommunity) {
+            throw new Error('Could not find Community')
+        }
+
+        const updatedCommunity = await communityRepo.findByIdAndUpdate(communityId, {
+            $push: {
+                guideIds: userId
+            }
+        }, { new: true })
+
+        if(!updatedCommunity){
+            throw new Error('Could not get new community')
+        }
+
+        return updatedCommunity
+    }
+
+    const unassignGuide = async (userId: string, communityId: string) => {
+        const currentCommunity = await communityRepo
+            .findById(communityId)
+            .lean()
+
+        if (!currentCommunity) {
+            throw new Error('Could not find Community')
+        }
+
+        const updatedCommunity = await communityRepo.findByIdAndUpdate(communityId, {
+            $pull: {
+                guideIds: userId
+            }
+        }, { new: true })
+
+        if(!updatedCommunity){
+            throw new Error('Could not get new community')
+        }
+
+        return updatedCommunity
+    }
+
     return {
         deleteOne,
         getTable,
@@ -119,5 +211,9 @@ export const CommunitySvc = (communityRepo: ICommunityRepo): ICommunitySvc => {
         getById,
         update,
         create,
+        assignMember,
+        unassignMember,
+        assignGuide,
+        unassignGuide,
     }
 }

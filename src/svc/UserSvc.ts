@@ -55,10 +55,10 @@ export const UserSvc = (userRepo: IUserRepo): IUserSvc => {
 
         const autoFilter = {
             ...filter,
-            name: {
-                $regex: search || '',
+            name: search ? {
+                $regex: search,
                 $options: 'ig',
-            },
+            } : undefined,
         }
 
         let aggregation: PipelineStage[] = [

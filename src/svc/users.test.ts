@@ -13,7 +13,7 @@ test('Testing User Aggregation', async () => {
     await userSvc.getTable({
         filter: {
             _id: {
-                $in: []
+                $in: ["63b1ec93614ccbd7249986d4","63c42e7672113ffd8916e5af","63c4317372113ffd8916e5b4"]
             }
         }
     })

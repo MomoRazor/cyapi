@@ -254,10 +254,17 @@ export const parseObjectIds = (filter: any, objectIdKeys?: string[]) => {
 export const traverseAndParse:any = (filter: any) => {
     if(typeof filter === 'object'){
         const keys = Object.keys(filter || {})
-
-        return traverseAndParse(filter[keys[0]])
+        
+        for(let i = 0; i < keys.length; i++){
+            filter[keys[i]] = traverseAndParse(filter[keys[i]])
+        }
+        return filter
     }else if(typeof filter === 'string'){
-        return new mongoose.Types.ObjectId(filter)
+        if(mongoose.Types.ObjectId.isValid(filter)){
+            return new mongoose.Types.ObjectId(filter)
+        }else{
+            return filter
+        }
     }else{
         return filter
     }

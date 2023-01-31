@@ -46,7 +46,7 @@ export const UserSvc = (userRepo: IUserRepo): IUserSvc => {
 
         return {
             data,
-            total: data[0].totalCount || 0,
+            total: data[0]?.totalCount || 0,
         }
     }
 

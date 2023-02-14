@@ -2,6 +2,7 @@ import { Connection, Model, Schema } from 'mongoose'
 
 export interface Community {
     name: string
+    groupEmail: string
     guideIds: string[]
     memberIds: string[]
 }
@@ -15,6 +16,7 @@ export type ICommunityRepo = Model<Community>
 const communitySchema = new Schema(
     {
         name: { type: String, required: true, trim: true },
+        groupEmail: { type: String, required: true, trim: true },
         guideIds: { type: [ObjectId], required: true, trim: true },
         memberIds: { type: [ObjectId], required: true, trim: true },
     },

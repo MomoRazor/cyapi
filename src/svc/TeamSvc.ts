@@ -1,5 +1,5 @@
 import { AutocompleteFilter, PaginationFilter } from '../data/general'
-import { ITeamRepo, Team } from '../data'
+import { ITeamRepo, IUserRepo, Team } from '../data'
 
 export interface ITeamSvc {
     getTable: (
@@ -14,10 +14,9 @@ export interface ITeamSvc {
     unassignMember: (userId: string, communityId: string) => Promise<Team>
 }
 
-export const TeamSvc = (teamRepo: ITeamRepo): ITeamSvc => {
+export const TeamSvc = (teamRepo: ITeamRepo, userRepo: IUserRepo): ITeamSvc => {
     const getTable = async (pagination: PaginationFilter) => {
-
-        const {filter, page=0, sort, limit=0} = pagination
+        const { filter, page = 0, sort, limit = 0 } = pagination
 
         const data = await teamRepo
             .find(filter, pagination.projection)
@@ -35,7 +34,7 @@ export const TeamSvc = (teamRepo: ITeamRepo): ITeamSvc => {
     }
 
     const getAutocomplete = async (info: AutocompleteFilter) => {
-        const { filter, search, limit=0 } = info
+        const { filter, search, limit = 0 } = info
 
         const autoFilter = {
             ...filter,
@@ -106,21 +105,37 @@ export const TeamSvc = (teamRepo: ITeamRepo): ITeamSvc => {
     }
 
     const assignMember = async (userId: string, teamId: string) => {
-        const currentTeam = await teamRepo
-            .findById(teamId)
-            .lean()
+        const currentTeam = await teamRepo.findById(teamId).lean()
 
         if (!currentTeam) {
             throw new Error('Could not find Team')
         }
 
-        const updatedTeam = await teamRepo.findByIdAndUpdate(teamId, {
-            $push: {
-                memberIds: userId
-            }
-        }, { new: true })
+        const user = await userRepo.findByIdAndUpdate(
+            userId,
+            {
+                $addToSet: {
+                    roleNames: currentTeam.roleNames || [],
+                },
+            },
+            { new: true }
+        )
 
-        if(!updatedTeam){
+        if (!user) {
+            throw new Error('Could not get new user')
+        }
+
+        const updatedTeam = await teamRepo.findByIdAndUpdate(
+            teamId,
+            {
+                $push: {
+                    memberIds: userId,
+                },
+            },
+            { new: true }
+        )
+
+        if (!updatedTeam) {
             throw new Error('Could not get new team')
         }
 
@@ -128,21 +143,37 @@ export const TeamSvc = (teamRepo: ITeamRepo): ITeamSvc => {
     }
 
     const unassignMember = async (userId: string, teamId: string) => {
-        const currentTeam = await teamRepo
-            .findById(teamId)
-            .lean()
+        const currentTeam = await teamRepo.findById(teamId).lean()
 
         if (!currentTeam) {
             throw new Error('Could not find Team')
         }
 
-        const updatedTeam = await teamRepo.findByIdAndUpdate(teamId, {
-            $pull: {
-                memberIds: userId
-            }
-        }, { new: true })
+        const user = await userRepo.findByIdAndUpdate(
+            userId,
+            {
+                $pull: {
+                    roleNames: currentTeam.roleNames || [],
+                },
+            },
+            { new: true }
+        )
 
-        if(!updatedTeam){
+        if (!user) {
+            throw new Error('Could not get new user')
+        }
+
+        const updatedTeam = await teamRepo.findByIdAndUpdate(
+            teamId,
+            {
+                $pull: {
+                    memberIds: userId,
+                },
+            },
+            { new: true }
+        )
+
+        if (!updatedTeam) {
             throw new Error('Could not get new team')
         }
 

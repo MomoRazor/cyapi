@@ -3,6 +3,7 @@ import { Connection, Model, Schema } from 'mongoose'
 export interface Team {
     name: string
     groupEmail: string
+    roleNames?: string[]
     memberIds: string[]
 }
 
@@ -16,6 +17,7 @@ const teamSchema = new Schema(
     {
         name: { type: String, required: true, trim: true },
         groupEmail: { type: String, required: true, trim: true },
+        roleNames: { type: [String], required: false, trim: true },
         memberIds: { type: [ObjectId], required: true, trim: true },
     },
     { timestamps: true }

@@ -17,8 +17,8 @@ const communitySchema = new Schema(
     {
         name: { type: String, required: true, trim: true },
         groupEmail: { type: String, required: true, trim: true },
-        guideIds: { type: [ObjectId], required: true, trim: true },
-        memberIds: { type: [ObjectId], required: true, trim: true },
+        guideIds: { type: [ObjectId], required: true },
+        memberIds: { type: [ObjectId], required: true },
     },
     { timestamps: true }
 )

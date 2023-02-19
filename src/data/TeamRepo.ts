@@ -17,8 +17,8 @@ const teamSchema = new Schema(
     {
         name: { type: String, required: true, trim: true },
         groupEmail: { type: String, required: true, trim: true },
-        roleNames: { type: [String], required: false, trim: true },
-        memberIds: { type: [ObjectId], required: true, trim: true },
+        roleNames: { type: [String], required: false },
+        memberIds: { type: [ObjectId], required: true },
     },
     { timestamps: true }
 )
